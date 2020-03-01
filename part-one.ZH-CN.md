@@ -1,11 +1,11 @@
 # Part-I
 
-This is part one of the tutorial. This is the most important section of the tutorial where you'll learn about the Fiber, detailed description of its structure and fields, creating host configuration for your renderer and injecting the renderer into devtools.
+这是本教程的第一部分。这节教程的重点是你将学习到 Fiber 的相关结构和字段的描述，以及为你的渲染器 (renderer) 配置 host configuration 并注入到 devtools 中。
 
-In this section, we will create a React reconciler using [`react-reconciler`](https://github.com/facebook/react/tree/master/packages/react-reconciler) package. We are going to implement the renderer using Fiber. Earlier, React was using a **stack renderer** as it was implemented on the traditional JavaScript stack. On the other hand, Fiber is influenced by algebraic effects and functional ideas. It can be thought of as a JavaScript object that contains information about a component, its input, and its output.
+本节，我们将使用 [`react-reconciler`](https://github.com/facebook/react/tree/master/packages/react-reconciler) 来构建一个 React reconciler 。以及我们将用 Fiber 来实现渲染器 (renderer) 。早前， React 是在传统的 JavaScript stack 之上来实现 **stack renderer** 渲染的。
+另一方面，Fiber 受 algebraic effects 和 functional ideas 的影响。 它可以被认为是包含有关的成分，它的输入，并且其输出的信息的 JavaScript 对象。
 
-Before we proceed further, I'll recommend you to read [this](https://github.com/acdlite/react-fiber-architecture) documentation on Fiber architecture by [Andrew Clark](https://twitter.com/acdlite?lang=en). This will make things
-easier for you.
+在我们继续之前，我需要推荐你先阅读这篇由 [Andrew Clark](https://twitter.com/acdlite?lang=en) 写的关于 Fiber 架构的[文章](https://github.com/acdlite/react-fiber-architecture)。它有助于你更好的理解。
 
 让我们一起上吧！
 
@@ -26,8 +26,7 @@ import { createElement } from './utils/createElement';
 
 注意我们也需要导入 `createElement` 函数。稍后，我们会实现这个函数。
 
-We will create a reconciler instance using `Reconciler` which accepts a **host config** object. In this object we will define
-some methods which can be thought of as lifecycle of a renderer (update, append children, remove children, commit). React will manage all the non-host components, stateless and composites.
+接着，我们将使用 `Reconciler` 来创建一个接收 **host config** 对象的 reconciler 实例。在这个对象中，我们需要定义一些关于渲染的生命周期的方法 (update, append children, remove children, commit)。React 则管理所有非宿主组件 (non-host components)，无状态组件(stateless)和复合组件(composites)。
 
 ```js
 const WordRenderer = Reconciler({
@@ -89,7 +88,7 @@ const WordRenderer = Reconciler({
 });
 ```
 
-Let's break down our host config -
+接着，让我们分解一下我们的 host config -
 
 **`createInstance`**
 
@@ -97,11 +96,13 @@ Let's break down our host config -
 
 Example - Let's say we render,
 
+下面，我们所说的需要渲染的例子，
+
 ```js
 <Text>Hello World</Text>
 ```
 
-`createInstance` will then return the information about the `type` of an element (' TEXT '), props ( { children: 'Hello World' } ), and the root instance (`WordDocument`).
+`createInstance` 将返回关于这个元素 (' TEXT ') 的 `type` ，属性 ( { children: 'Hello World' } ) 以及它的 root 实例 (`WordDocument`) 。
 
 **Fiber**
 
@@ -109,10 +110,10 @@ A fiber is work on a component that needs to be done or was done. Atmost, a comp
 
 `internalInstanceHandle` contains information about the `tag`, `type`, `key`, `stateNode`, and the return fiber. This object (fiber) further contains information about -
 
-- **`tag`** - Type of fiber.
-- **`key`** - Unique identifier of the child.
-- **`type`** - function/class/module associated with this fiber.
-- **`stateNode`** - The local state associated with this fiber.
+- **`tag`** - fiber 的类型
+- **`key`** - 子组件的唯一识别码
+- **`type`** - 与 fiber 相关的 function/class/module
+- **`stateNode`** - 与 fiber 相关的状态
 
 - **`return`** - The fiber to return to after finishing processing this one (parent fiber).
 - **`child`** - `child`, `sibling` and `index` represents the **singly linked list data structure**.
@@ -145,7 +146,7 @@ It appends the children. If children are wrapped inside a parent component (eg: 
 will create a property called `document` on a parent node and append all the children to it. This will be helpful when we will parse the input component
 and make a call to the render method of our component.
 
-Example -
+例如 -
 
 ```js
 const data = document.render(); // returns the output
@@ -154,10 +155,11 @@ const data = document.render(); // returns the output
 **`prepareUpdate`**
 
 It computes the diff for an instance. Fiber can reuse this work even if it pauses or abort rendering a part of the tree.
+该方法用来对应实例的差异。Fiber 。
 
 **`commitUpdate`**
 
-Commit the update or apply the diff calculated to the host environment's node (WordDocument).
+提交更新或者将计算的差异应用到宿主环境 (WordDocument) 的节点 (node) 中
 
 **`commitMount`**
 
@@ -185,56 +187,58 @@ When we're inside a host component that was removed, it is now ok to remove the 
 It is a `commitPlacement` hook and is called when all the nodes are recursively inserted into parent. This is abstracted into a function named `getHostSibling` which continues to search the tree until it finds a sibling host node (React will change this methodology may be in next release because it's not an efficient way as it leads to exponential search complexity)
 
 **`appendChildToContainer`**
-If type of fiber is a `HostRoot` or `HostPortal` then the child is added to that container.
+如果 fibe 的类型是 `HostRoot` 或 `HostPortal`，那么子组件将被附加到这个容器中。
 
 **`appendChild`**
-Child is added to the parent.
+将子组件添加到父组件中。
 
 **`shouldSetTextContent`**
-If it returns false then schedule the text content to be reset.
+如果它返回 false 那么 schedule 将重置文本内容。
 
 **`getHostContext`**
 It is used to mark the current host context (root instance) which is sent to update the payload and therefore update the queue of work in progress fiber (may indicate there is a change).
 
+
+
 **`createTextInstance`**
-Creates an instance of a text node.
+创建一个 text 节点的实例。
 
 **`supportsMutation`**
-`True` for **mutating renderers** where the host target has mutative api like `appendChild` in DOM.
+`True` ，用于宿主目标中具有类似 DOM 的 `appendChild` 一样的可变 API 的 **mutating renderers** 中。
 
-### Note
+### 笔记
 
-- You should **NOT** rely on Fiber data structure itself. Consider its fields private.
-- Treat 'internalInstanceHandle' as an opaque object itself.
-- Use host context methods for getting data from roots.
+- 你需要**不要**依赖 Fiber 的数据结构。需要认为它的字段是私有的。
+- 将 'internalInstanceHandle' 看做是一个 opaque 对象。
+- 使用 host context 从 roots 中获取数据。
 
-> The above points were added to the tutorial after a discussion with [Dan Abramov](https://twitter.com/dan_abramov) regarding the host config methods and Fiber properties.
+> 上述的几点都是在和 [Dan Abramov](https://twitter.com/dan_abramov) 讨论 host config 方法和 Fiber 的属性之后添加到教程当中的。
 
-## Injecting third party renderers into devtools
+## 注入第三方 renderers 到 devtools 中
 
-You can also inject your renderer into react-devtools to debug the host components of your environment. Earlier, it wasn't possible for third party renderers but now using the return value of `reconciler` instance, it is possible to inject the renderer into react-devtools.
+你也可以注入你自己的 renderer 到 react-devtools 来调试你的环境中的组件。以前，第三方的 renderers 是无法完成这样的事情的，但现在使用 `reconciler` 实例的返回值之后，它便可以注入第三方的 renderers 到 react-devtools 中。
 
-**Usage**
+**用法**
 
-Install standalone app for react-devtools
+把 react-devtools 在独立的应用中
 
 ```
 yarn add --dev react-devtools
 ```
 
-Run
+然后运行
 
 ```
 yarn react-devtools
 ```
 
-or if you use npm,
+而如果你使用的是 npm，
 
 ```
 npm install --save-dev react-devtools
 ```
 
-then run it with
+然后用下面的方式来运行
 
 ```
 npx react-devtools
@@ -252,7 +256,7 @@ const CustomRenderer = Reconciler(hostConfig);
 module.exports = CustomRenderer;
 ```
 
-Then in your `render` method,
+接着在你的 `render` 方法，
 
 ```js
 const CustomRenderer = require('./reconciler')
@@ -268,10 +272,12 @@ function render(element, target, callback) {
 }
 ```
 
-We're done with the Part One of our tutorial. I know some concepts are difficult to grok solely by looking at code. Initially it feels agitating but keep trying it and it will eventually make sense. When I first started learning about the Fiber architecture, I couldn't understand anything at all. I was frustated and dismayed but I used `console.log()` in every section of the above code and tried to understand its implementation and then there was this "Aha Aha" moment and it finally helped me to build [redocx](https://github.com/nitin42/redocx). Its a little perplexing to understand but you will get it eventually.
+那么我们完成了教程的第一部分。我知道仅通过阅读代码来理解一些概念是困难的。开始可能会觉得厌烦，但需要保持尝试，最后会有意义的。我第一次学习 Fiber 架构的时候，我并不能很好的理解所有的东西。虽然挺沮丧的，但我一直通过上述代码中使用 `console.log()` 来帮助自己理解为何如此实现。 "Aha Aha" 的时候，便慢慢出现了。最后它帮助了我构建了 [redocx](https://github.com/nitin42/redocx) 项目。要理解它是有点困惑的，但你最后会明白的。
 
-If you still have any doubts, DMs are open. I'm at [@NTulswani](https://twitter.com/NTulswani) on Twitter.
+如果你有任何的疑问，可以打开 DMs ，我在 Twitter 上的 [@NTulswani](https://twitter.com/NTulswani) 。
 
 [More practical examples for the renderer](https://github.com/facebook/react/tree/master/packages/react-reconciler#practical-examples)
 
-[Continue to Part-II](./part-two.md)
+[更多关于 renderer 的样例](https://github.com/facebook/react/tree/master/packages/react-reconciler#practical-examples)
+
+[接着是 Part-II](./part-two.ZH-CN.md)
