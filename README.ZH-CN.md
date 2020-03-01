@@ -26,22 +26,19 @@
 
 ### [Part-II](./part-two.md)
 
-In part two, we will create a public interface to the reconciler i.e a renderer. We will create a custom method for `createElement` and will also architect the component API for our example.
-
-在第二部分中，我们将为 reconciler 即 renderer 构建一个公共接口(a public interface)。
+在第二部分中，我们将为 reconciler 即 renderer 构建一个公共接口(a public interface)。我们也将创建一个自定义的 `createElement` 方法，以及在我们的一些样例中设计组件的 API。
 
 ### [Part-III](./part-three.md)
 
 在第三部分中，我们将构建一个 render 方法用来渲染我们的 input 组件。
 
-## What we will build?
+## 我们怎么构建呢？
 
-We will create a custom renderer that will render a React component to a word document. I've already made one. Full source code and the documentation for that is available [here](https://github.com/nitin42/redocx).
+我们将构建一个将 React 组件渲染到 word 文档中的自定义渲染器 (renderer)。我已经实现了这部分。源码和文档都存在 [redocx](https://github.com/nitin42/redocx) 项目中。
 
-We will use [officegen](https://github.com/Ziv-Barber/officegen) for this. I'll explain some of it's basic concepts here.
+我们将使用 [officegen](https://github.com/Ziv-Barber/officegen) 来实现功能。下面，我将解析它的一些基本概念。
 
-Officegen can generate Open Office XML files for Microsoft Office 2007 and later. It generates a output stream and not a file.
-It is independent of any output tool.
+Officegen 可以生成 Microsoft Office 2007 及之后的版本的 Open Office XML 文件。它会生成的一个输出流而不是文件，与任意输出工具无关。
 
 **创建一个文档对象**
 
@@ -72,13 +69,13 @@ yarn install
 yarn example
 ```
 
-在你运行 `yarn example` 命令之后，将会有一个 docx 文件生成在 [demo](./demo) 目录中
+在你运行 `yarn example` 命令之后，将会有一个 docx 文件生成在 [demo](./demo) 目录中。
 
 ## 贡献
 
-Suggestions to improve the tutorial are welcome 😃.
+如果你有更好的建议，欢迎提供给我 😃。
 
-**If you've completed the tutorial successfully, you can either watch/star this repo or follow me on [twitter](https://twitter.com/NTulswani) for more updates.**
+**如果你成功的完成了这个教程, 你可以给这个项目点一个 watch/star 或者关注我的 [twitter](https://twitter.com/NTulswani) 中来获取新的更新。**
 
 <a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/FCRW65HPiwhNtebDx2tTc53E/nitin42/Making-a-custom-React-renderer'>
   <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/FCRW65HPiwhNtebDx2tTc53E/nitin42/Making-a-custom-React-renderer.svg' />
